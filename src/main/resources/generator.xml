@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 引入 application.properties -->
+    <properties resource="application.properties" />
+    <!-- MyBatis3Simple：不生成 Example相关类及方法 defaultModelType="flat" -->
+    <context id="MysqlContext" targetRuntime="MyBatis3Simple" >
+        <!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <!-- 指定生成 Mapper 的继承模板 -->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+        </plugin>
+        <!--配置代码中是否可以生成**注释信息**，具体就是生成表或字段的备注信息-->
+        <commentGenerator>
+            <!-- 阻止生成的注释包含时间戳，默认为false-->
+            <property name="suppressDate" value="true"/>
+            <!-- 阻止生成注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!-- jdbc 连接配置 -->
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+        </jdbcConnection>
+        <!--java类型处理器-->
+        <!--用于处理DB中的类型到Java中的类型，默认使用JavaTypeResolverDefaultImpl；-->
+        <!--注意一点，默认会先尝试使用Integer，Long，Short等来对应DECIMAL和 NUMERIC数据类型；-->
+        <javaTypeResolver>
+            <!-- true：使用BigDecimal对应DECIMAL和 NUMERIC数据类型
+                false：默认,
+                scale>0;length>18：使用BigDecimal;
+                scale=0;length[10,18]：使用Long；
+                scale=0;length[5,9]：使用Integer；
+                scale=0;length<5：使用Short；-->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- 生成实体类的包名和位置 ，targetPackage指的是包名,targetProject值得是路径位置-->
+        <!-- 对于生成的pojo所在包,pojo其实就是domain Entity-->
+        <javaModelGenerator targetPackage="com.example.docker.entities" targetProject="src/main/java">
+            <!--在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false-->
+            <property name="enableSubPackages" value="false"/>
+            <!--设置是否在setter方法中，对String类型字段调用trim()方法，一般可以设置为false，需要的时候在传入参数的地方做trim就好了-->
+            <property name="trimStrings" value="false"/>
+        </javaModelGenerator>
+        <!-- 对于生成的mapper.xml所在目录 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
+        <!-- 配置mapper对应的java映射  也可以叫dao层 -->
+        <javaClientGenerator targetPackage="com.example.docker.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
+        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
+        <table tableName="staff" domainObjectName="staff">
+            <generatedKey column="id"  sqlStatement="JDBC"/>
+        </table>
+    </context>
+</generatorConfiguration>
